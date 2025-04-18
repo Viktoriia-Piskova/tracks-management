@@ -5,6 +5,7 @@ import EditTrack from "../pages/EditTrack";
 import TracksList from "../pages/TracksList";
 
 export default function MainLayout() {
+  console.log('lauyiu')
   const location = useLocation();
   const navigate = useNavigate();
 
