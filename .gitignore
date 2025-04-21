@@ -3,7 +3,7 @@
 # Node modules
 # Node modules
 /backend/node_modules/
-/frontend-tracks/node_modules/
+/frontend/node_modules/
 
 # Build artifacts
 **/build/
