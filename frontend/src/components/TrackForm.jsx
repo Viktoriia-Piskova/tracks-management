@@ -17,13 +17,28 @@ const TrackForm = ({ inputData, onSubmit, children }) => {
   //   setSelectedGenres(genre);
   // }
 
+  console.log(inputData);
+
   function handleSubmit(event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
-    const data = Object.fromEntries(formData);
+    const trackData = Object.fromEntries(formData);
+    console.log(trackData);
 
-    onSubmit({ ...data });
+    trackData.id = trackData.id || Date.now().toString();
+    trackData.slug =
+      trackData.slug ||
+      trackData.title
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-");
+    trackData.createdAt = data.createdAt || new Date().toISOString();
+    trackData.updatedAt = new Date().toISOString();
+    trackData.genres = trackData.genres || [...data];
+
+    onSubmit({ ...trackData });
   }
 
   return (
@@ -65,13 +80,17 @@ const TrackForm = ({ inputData, onSubmit, children }) => {
         />
       </p>
 
+      {inputData?.genres && (
+        <div className="selected-genres bg-slate-500">
+          {inputData.genres.map((tag) => {
+            return <GenreTag key={tag}>{tag}</GenreTag>;
+          })}
+        </div>
+      )}
       <div className="genres">
         {isPending && <p>Loading genres...</p>}
         {isError && (
-          <Error
-            title="Failed to load genres"
-            message="Please try again"
-          />
+          <Error title="Failed to load genres" message="Please try again" />
         )}
         {data &&
           data.map((tag) => {

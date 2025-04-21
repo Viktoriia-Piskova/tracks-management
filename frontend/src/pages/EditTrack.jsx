@@ -10,7 +10,7 @@ const EditTrack = () => {
   const params = useParams();
 
   const { data, isPending, isError, error } = useQuery({
-    queryFn: ({ signal }) => fetchTrack({ signal, id: params.id }),
+    queryFn: ({ signal }) => fetchTrack({ signal, slug: params.id }),
     queryKey: ["tracks", params.id],
   });
 
@@ -43,7 +43,8 @@ const EditTrack = () => {
   });
 
   function handleSubmit(formData) {
-    mutate({ id: params.id, track: formData });
+    console.log(formData)
+    mutate({ id: formData.id, track: formData });
     navigate(-1);
   }
 

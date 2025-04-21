@@ -11,12 +11,11 @@ const CreateTrack = () => {
     mutationFn: createNewTrack,
     onSuccess: () => {
       navigate(-1);
-      queryClient.invalidateQueries({ queryKey: ["tracks"] });
+      queryClient.invalidateQueries({ queryKey: ["tracks", 1] });
     },
   });
 
   function handleSubmit(formData) {
-    console.log(formData)
     mutate({ track: formData });
   }
 

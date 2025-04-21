@@ -8,6 +8,15 @@ import TrackItem from "../components/TrackItem";
 
 const TracksList = () => {
   const [page, setPage] = useState(1);
+
+  const [filters, setFilters] = useState({
+    searchTerm: "",
+    sort: "",
+    order: "",
+    artist: "",
+    genre: "",
+  });
+
   const limit = 10;
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,13 +27,21 @@ const TracksList = () => {
     });
   }
 
+  function openEditTrackModal(slug) {
+    navigate(`/tracks/edit/${slug}`, {
+      state: { backgroundLocation: location },
+    });
+  }
+
+  function applySort(param) {
+    setFilters((prev) => ({ ...prev, sort: param }));
+  }
+
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["tracks", page],
     queryFn: ({ signal }) => fetchTracks({ signal, page, limit }),
     keepPreviousData: true,
   });
-
-  console.log(data);
 
   let content = "";
 
@@ -46,7 +63,10 @@ const TracksList = () => {
         <ul>
           {data.data.map((track) => (
             <li key={track.id}>
-              <TrackItem track={track} />
+              <TrackItem
+                track={track}
+                onEdit={() => openEditTrackModal(track.slug)}
+              />
             </li>
           ))}
         </ul>
