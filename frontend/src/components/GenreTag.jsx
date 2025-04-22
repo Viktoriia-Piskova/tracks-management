@@ -1,11 +1,15 @@
 import React from "react";
 
-const GenreTag = ({ children }) => {
+const GenreTag = ({ genre, isSelected, onSelectGenre }) => {
   return (
-    <button type="button" className="inline-flex bg-slate-400 m-2">
-      <span>+</span>
-      <p className="px-2">{children}</p>
-      <span>x</span>
+    <button onClick={() => onSelectGenre(genre)}
+      type="button"
+      className={`inline-flex p-2 rounded-md m-2 hover:bg-blue-400 ${
+        isSelected ? "bg-slate-400" : "bg-slate-800"
+      }`}
+    >
+      <p className="px-2">{genre}</p>
+      {isSelected ? <span>x</span> : <span>+</span>}
     </button>
   );
 };

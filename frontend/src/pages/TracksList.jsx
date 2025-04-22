@@ -6,6 +6,7 @@ import Loader from "../components/Loader";
 import Error from "../components/Error";
 import TrackItem from "../components/TrackItem";
 import DeleteTrack from "../components/DeleteTrack";
+import Header from "../layouts/Header";
 
 const TracksList = () => {
   const [page, setPage] = useState(1);
@@ -94,7 +95,6 @@ const TracksList = () => {
   if (data) {
     content = (
       <>
-        <h2>List of tracks</h2>
         <ul className="bg-slate-800">
           {data.data.map((track) => (
             <li key={track.id}>
@@ -133,10 +133,7 @@ const TracksList = () => {
 
   return (
     <div className="w-[100vw]">
-      <header className="bg-slate-400 w-full text-center">
-        <h1>Welcome to The Tracks List</h1>
-        <p>View, sort, search, filter, edit and create tracks</p>
-      </header>
+      <Header />
       <main className="px-5 max-w-[1440px] m-auto">
         <div>
           <button onClick={openCreateTrackModal}>Create a Track</button>
