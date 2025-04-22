@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { fetchTracks } from "../utils/http";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { fetchTracks, deleteTrack } from "../utils/http";
 import Loader from "../components/Loader";
 import Error from "../components/Error";
 import TrackItem from "../components/TrackItem";
+import DeleteTrack from "../components/DeleteTrack";
 
 const TracksList = () => {
   const [page, setPage] = useState(1);
@@ -16,6 +17,40 @@ const TracksList = () => {
     artist: "",
     genre: "",
   });
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [currentEventId, setCurrentEventId] = useState("fakeid");
+
+  const {
+    mutate,
+    isPending: isPendingDeleting,
+    isError: isErrorDeleting,
+    error: errorDeleting,
+  } = useMutation({
+    mutationFn: deleteTrack,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["tracks", page],
+        refetchType: "none",
+      });
+    },
+    onSettled: () => {
+      setIsDeleting(false);
+    },
+  });
+
+  function handleStartDelete(trackId) {
+    setIsDeleting(true);
+    setCurrentEventId(trackId);
+  }
+
+  function handleStopDelete() {
+    setIsDeleting(false);
+  }
+
+  function handleDelete(currentEventId) {
+    mutate(currentEventId);
+  }
 
   const limit = 10;
   const navigate = useNavigate();
@@ -66,6 +101,7 @@ const TracksList = () => {
               <TrackItem
                 track={track}
                 onEdit={() => openEditTrackModal(track.slug)}
+                onDelete={() => handleStartDelete(track.id)}
               />
             </li>
           ))}
@@ -106,6 +142,12 @@ const TracksList = () => {
           <button onClick={openCreateTrackModal}>Create a Track</button>
         </div>
         <div>{content}</div>
+        {isDeleting && (
+          <DeleteTrack
+            onStopDeleting={handleStopDelete}
+            onStartDeleting={() => handleDelete(currentEventId)}
+          />
+        )}
       </main>
     </div>
   );

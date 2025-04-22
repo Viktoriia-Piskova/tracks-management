@@ -17,27 +17,23 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, children }) => {
   //   setSelectedGenres(genre);
   // }
 
-  //console.log(inputData);
- // console.log( trackOldData)
-
-
   function handleSubmit(event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
     const trackData = Object.fromEntries(formData);
 
-    trackData.id = trackOldData.id || Date.now().toString();
+    trackData.id = trackOldData?.id || Date.now().toString();
     trackData.slug =
-    trackOldData.slug ||
+    trackOldData?.slug ||
       trackData.title
         .toLowerCase()
         .trim()
         .replace(/[^\w\s-]/g, "")
         .replace(/\s+/g, "-");
-    trackData.createdAt = trackOldData.createdAt || new Date().toISOString();
+    trackData.createdAt = trackOldData?.createdAt || new Date().toISOString();
     trackData.updatedAt = new Date().toISOString();
-    trackData.genres = trackOldData.genres || [...data];
+    trackData.genres = trackOldData?.genres || [...data];
 
     onSubmit({ ...trackData });
   }

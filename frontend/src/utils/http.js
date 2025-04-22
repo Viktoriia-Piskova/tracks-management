@@ -99,7 +99,7 @@ export const fetchTrack = async ({ signal, slug }) => {
   return track;
 };
 
-export const deleteTrack = async ({ id }) => {
+export const deleteTrack = async ( id ) => {
   const response = await fetch(`http://localhost:8000/api/tracks/${id}`, {
     method: "DELETE",
   });
