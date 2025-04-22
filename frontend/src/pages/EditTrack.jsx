@@ -43,7 +43,6 @@ const EditTrack = () => {
   });
 
   function handleSubmit(formData) {
-    console.log(formData)
     mutate({ id: formData.id, track: formData });
     navigate(-1);
   }
@@ -80,7 +79,7 @@ const EditTrack = () => {
 
   if (data) {
     content = (
-      <TrackForm inputData={data} onSubmit={handleSubmit}>
+      <TrackForm inputData={data} onSubmit={handleSubmit} trackOldData={data}>
         <Link to="../" className="button-text">
           Cancel
         </Link>

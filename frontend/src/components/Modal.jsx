@@ -19,9 +19,9 @@ const Modal = ({ children, onClose }) => {
   }, []);
 
   return (
-    <div>
+    <div className="">
       {createPortal(
-        <dialog onClick={onClose} ref={dialog}>
+        <dialog onClick={onClose} ref={dialog} className="m-auto p-4">
           <div className="p-4" onClick={(e) => e.stopPropagation()}>
             {children}
           </div>

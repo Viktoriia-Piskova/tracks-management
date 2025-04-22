@@ -60,7 +60,7 @@ const TracksList = () => {
     content = (
       <>
         <h2>List of tracks</h2>
-        <ul>
+        <ul className="bg-slate-800">
           {data.data.map((track) => (
             <li key={track.id}>
               <TrackItem
@@ -96,12 +96,12 @@ const TracksList = () => {
   }
 
   return (
-    <div>
-      <header>
+    <div className="w-[100vw]">
+      <header className="bg-slate-400 w-full text-center">
         <h1>Welcome to The Tracks List</h1>
         <p>View, sort, search, filter, edit and create tracks</p>
       </header>
-      <main>
+      <main className="px-5 max-w-[1440px] m-auto">
         <div>
           <button onClick={openCreateTrackModal}>Create a Track</button>
         </div>

@@ -3,31 +3,40 @@ import { formatIsoTime } from "../utils/helpers";
 
 const TrackItem = ({ track, onEdit, onDelete, onTrackUpdate }) => {
   return (
-    <article id={track.id} data-slug={track.slug}>
-      <h3>{track.title}</h3>
-      <p>{track.artist}</p>
-      <p>{track.album}</p>
-      <ul>
-        {track.genres.map((genre) => {
-          return <li key={`${track.id}_${genre}`}>{genre}</li>;
-        })}
-      </ul>
-      <div>
-        <img src={track.coverImage} alt={track.album} />
+    <article
+      id={track.id}
+      data-slug={track.slug}
+      className="flex gap-4 justify-between"
+    >
+      <div className="h-10 max-w-[50px]">
+        <img src={track.coverImage || "/music-track-placeholder.webp" } alt={track.album} />
       </div>
-      {track.audioFile && (
-        <audio
-          controls
-          src={`http://localhost:8000/api/files/${track.audioFile}`}
-        ></audio>
-      )}
-      <p>
+      <div>
+        <h3>{track.title}</h3>
+        <p>{track.artist}</p>
+        <p>{track.album}</p>
+        <ul className="flex">
+          {track.genres.map((genre) => {
+            return <li key={`${track.id}_${genre}`}>{genre}</li>;
+          })}
+        </ul>
+        {track.audioFile && (
+          <audio
+            controls
+            src={`http://localhost:8000/api/files/${track.audioFile}`}
+          ></audio>
+        )}
+      </div>
+
+      <p className="flex">
         <span>{formatIsoTime(track.createdAt)}</span>
         <span>{formatIsoTime(track.updatedAt)}</span>
       </p>
-      <button onClick={onEdit}>Edit</button>
-      <button onClick={onDelete}>Delete</button>
-      <button onClick={onTrackUpdate}>Track file</button>
+      <div className="flex align-bottom">
+        <button onClick={onEdit}>Edit</button>
+        <button onClick={onDelete}>Delete</button>
+        <button onClick={onTrackUpdate}>Track file</button>
+      </div>
     </article>
   );
 };

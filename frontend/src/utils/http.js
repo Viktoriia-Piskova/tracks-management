@@ -13,8 +13,6 @@ export const fetchTracks = async ({
 }) => {
   const baseUrl = `http://localhost:8000/api/tracks`;
   const params = new URLSearchParams();
-  console.log(params);
-
   params.append("page", page);
   params.append("limit", limit);
 
@@ -36,7 +34,6 @@ export const fetchTracks = async ({
 
   const url = `${baseUrl}?${params.toString()}`;
   //'http://localhost:8000/api/tracks?sort=artist&order=asc&search=mal&genre=rock&artist=Post%20Malone'
-  console.log(url);
   const response = await fetch(url, { signal: signal, method: "GET" });
 
   if (!response.ok) {
@@ -118,10 +115,9 @@ export const deleteTrack = async ({ id }) => {
 };
 
 export const updateTrack = async ({ id, track }) => {
-  console.log(track);
   const response = await fetch(`http://localhost:8000/api/tracks/${id}`, {
     method: "PUT",
-    body: JSON.stringify({ track }),
+    body: JSON.stringify(track),
     headers: {
       "Content-Type": "application/json",
     },

@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchTrackGenres } from "../utils/http.js";
 import Error from "./Error.jsx";
 
-const TrackForm = ({ inputData, onSubmit, children }) => {
+const TrackForm = ({ inputData, onSubmit, trackOldData, children }) => {
   //const [selectedGenres, setSelectedGenres] = useState(inputData?.genres);
 
   const { data, isPending, isError, error } = useQuery({
@@ -17,66 +17,73 @@ const TrackForm = ({ inputData, onSubmit, children }) => {
   //   setSelectedGenres(genre);
   // }
 
-  console.log(inputData);
+  //console.log(inputData);
+ // console.log( trackOldData)
+
 
   function handleSubmit(event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
     const trackData = Object.fromEntries(formData);
-    console.log(trackData);
 
-    trackData.id = trackData.id || Date.now().toString();
+    trackData.id = trackOldData.id || Date.now().toString();
     trackData.slug =
-      trackData.slug ||
+    trackOldData.slug ||
       trackData.title
         .toLowerCase()
         .trim()
         .replace(/[^\w\s-]/g, "")
         .replace(/\s+/g, "-");
-    trackData.createdAt = data.createdAt || new Date().toISOString();
+    trackData.createdAt = trackOldData.createdAt || new Date().toISOString();
     trackData.updatedAt = new Date().toISOString();
-    trackData.genres = trackData.genres || [...data];
+    trackData.genres = trackOldData.genres || [...data];
 
     onSubmit({ ...trackData });
   }
 
   return (
     <form id="track-form" onSubmit={handleSubmit}>
-      <p>
-        <label htmlFor="album">album</label>
+      <p className="flex justify-between my-3">
+        <label htmlFor="title">title</label>
         <input
+          className="bg-slate-200 w-[50%]"
+          type="text"
+          id="title"
+          name="title"
+          defaultValue={inputData?.title ?? ""}
+        />
+      </p>
+      <p className="flex justify-between my-3">
+        <label htmlFor="album" className="text-slate-200">
+          album
+        </label>
+        <input
+          className="bg-slate-200 w-[50%]"
           type="text"
           id="album"
           name="album"
           defaultValue={inputData?.album ?? ""}
         />
       </p>
-      <p>
+      <p className="flex justify-between my-3">
         <label htmlFor="artist">artist</label>
         <input
+          className="bg-slate-200 w-[50%]"
           type="text"
           id="artist"
           name="artist"
           defaultValue={inputData?.artist ?? ""}
         />
       </p>
-      <p>
+      <p className="flex justify-between my-3">
         <label htmlFor="coverImage">coverImage</label>
         <input
+          className="bg-slate-200 w-[50%]"
           type="text"
           id="coverImage"
           name="coverImage"
           defaultValue={inputData?.coverImage ?? ""}
-        />
-      </p>
-      <p>
-        <label htmlFor="title">title</label>
-        <input
-          type="text"
-          id="title"
-          name="title"
-          defaultValue={inputData?.title ?? ""}
         />
       </p>
 
@@ -87,7 +94,7 @@ const TrackForm = ({ inputData, onSubmit, children }) => {
           })}
         </div>
       )}
-      <div className="genres">
+      <div className="max-w-[1000px]">
         {isPending && <p>Loading genres...</p>}
         {isError && (
           <Error title="Failed to load genres" message="Please try again" />
