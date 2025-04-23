@@ -3,6 +3,8 @@ import Modal from "../components/Modal";
 import CreateTrack from "../pages/CreateTrack";
 import EditTrack from "../pages/EditTrack";
 import TracksList from "../pages/TracksList";
+import {FilterProvider} from "../store/filters-context";
+
 
 export default function MainLayout() {
   const location = useLocation();
@@ -20,7 +22,7 @@ export default function MainLayout() {
   );
 
   return (
-    <>
+    <FilterProvider>
       {!is404 && <TracksList />}
       {backgroundLocation && (isCreateModal || isEditModal) && (
         <Modal onClose={() => navigate(-1)}>
@@ -33,6 +35,6 @@ export default function MainLayout() {
       {!backgroundLocation && isEditModal && <EditTrack />}
 
       <Outlet />
-    </>
+    </FilterProvider>
   );
 }

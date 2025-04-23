@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import React, { useState, useContext, useMemo } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { fetchTracks, deleteTrack } from "../utils/http";
 import Loader from "../components/Loader";
@@ -8,25 +8,16 @@ import TrackItem from "../components/TrackItem";
 import DeleteTrack from "../components/DeleteTrack";
 import Header from "../layouts/Header";
 import AsideFilters from "../layouts/AsideFilters";
+import Pagination from "../components/Pagination";
+import { FilterContext } from "../store/filters-context";
 
 const TracksList = () => {
+  const { filters } = useContext(FilterContext);
   const [page, setPage] = useState(1);
-  const [searchParams, setSearchParams] = useSearchParams()
-
-  const [filters, setFilters] = useState({
-    search: "",
-    sort: "",
-    order: "",
-    artist: "",
-    genre: "",
-  });
-
-
-  // const [searchParams] = useSearchParams();
-  // const filters = Object.fromEntries([...searchParams]);
 
   const [isDeleting, setIsDeleting] = useState(false);
-  const [currentEventId, setCurrentEventId] = useState("fakeid");
+  const [currentEventId, setCurrentEventId] = useState("");
+  const filtersKey = useMemo(() => JSON.stringify(filters), [filters]);
 
   const {
     mutate,
@@ -37,12 +28,16 @@ const TracksList = () => {
     mutationFn: deleteTrack,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["tracks", page],
+        queryKey: ["tracks", page, filtersKey],
         refetchType: "none",
       });
     },
     onSettled: () => {
       setIsDeleting(false);
+      queryClient.invalidateQueries({
+        queryKey: ["tracks", page, filtersKey],
+        refetchType: "none",
+      });
     },
   });
 
@@ -57,6 +52,14 @@ const TracksList = () => {
 
   function handleDelete(currentEventId) {
     mutate(currentEventId);
+  }
+
+  function nextPage() {
+    setPage((p) => Math.min(p + 1, data.meta.totalPages));
+  }
+
+  function prevPage() {
+    setPage((page) => Math.max(page - 1, 1));
   }
 
   const limit = 10;
@@ -75,29 +78,8 @@ const TracksList = () => {
     });
   }
 
-  function applyFilters(param) {
-    console.log(param)
-
-    setFilters((prev) => ({ ...prev, ...param }));
-    console.log(filters)
-  }
-
-  function resetFilters() {
-    setFilters({
-      searchTerm: "",
-      sort: "",
-      order: "",
-      artist: "",
-      genre: "",
-    });
-  
-    // Clear URL params too, optional but tasty 😋
-    setSearchParams(new URLSearchParams());
-  }
-
-
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["tracks", page, filters],
+    queryKey: ["tracks", page, JSON.stringify(filters)],
     queryFn: ({ signal }) => fetchTracks({ signal, page, limit, ...filters }),
     keepPreviousData: true,
   });
@@ -115,43 +97,38 @@ const TracksList = () => {
     />;
   }
 
+  console.log(data?.data?.length);
+
   if (data) {
-    content = (
-      <>
-        <ul className="bg-slate-800">
-          {data.data.map((track) => (
-            <li key={track.id}>
-              <TrackItem
-                track={track}
-                onEdit={() => openEditTrackModal(track.slug)}
-                onDelete={() => handleStartDelete(track.id)}
-              />
-            </li>
-          ))}
-        </ul>
+    if (data?.data?.length < 1) {
+      content = (
         <div>
-          <button
-            onClick={() => setPage((page) => Math.max(page - 1, 1))}
-            disabled={page === 1}
-          >
-            Prev
-          </button>
-
-          <span>
-            Page {data.meta.page} of {data.meta.totalPages}
-          </span>
-
-          <button
-            onClick={() =>
-              setPage((p) => Math.min(p + 1, data.meta.totalPages))
-            }
-            disabled={page === data.meta.totalPages}
-          >
-            Next
-          </button>
+          <p>Sorry, no tracks found. Please, reset filters</p>
         </div>
-      </>
-    );
+      );
+    } else {
+      content = (
+        <>
+          <ul className="bg-slate-800">
+            {data.data.map((track) => (
+              <li key={track.id}>
+                <TrackItem
+                  track={track}
+                  onEdit={() => openEditTrackModal(track.slug)}
+                  onDelete={() => handleStartDelete(track.id)}
+                />
+              </li>
+            ))}
+          </ul>
+          <Pagination
+            page={page}
+            totalPages={data.meta.totalPages}
+            onNext={nextPage}
+            onPrev={prevPage}
+          />
+        </>
+      );
+    }
   }
 
   return (
@@ -169,7 +146,7 @@ const TracksList = () => {
           />
         )}
       </main>
-      <AsideFilters onFilter={applyFilters} onReset={resetFilters} />
+      <AsideFilters />
     </div>
   );
 };

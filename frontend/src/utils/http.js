@@ -5,7 +5,7 @@ export const fetchTracks = async ({
   signal,
   page = 1,
   limit = 10,
-  searchTerm,
+  search,
   sort,
   order,
   artist,
@@ -16,8 +16,8 @@ export const fetchTracks = async ({
   params.append("page", page);
   params.append("limit", limit);
 
-  if (searchTerm) {
-    params.append("search", searchTerm);
+  if (search) {
+    params.append("search", search);
   }
   if (sort) {
     params.append("sort", sort);
@@ -33,8 +33,6 @@ export const fetchTracks = async ({
   }
 
   const url = `${baseUrl}?${params.toString()}`;
-  console.log(url)
-  //'http://localhost:8000/api/tracks?sort=artist&order=asc&search=mal&genre=rock&artist=Post%20Malone'
   const response = await fetch(url, { signal: signal, method: "GET" });
 
   if (!response.ok) {
