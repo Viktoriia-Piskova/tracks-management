@@ -33,6 +33,7 @@ export const fetchTracks = async ({
   }
 
   const url = `${baseUrl}?${params.toString()}`;
+  console.log(url)
   //'http://localhost:8000/api/tracks?sort=artist&order=asc&search=mal&genre=rock&artist=Post%20Malone'
   const response = await fetch(url, { signal: signal, method: "GET" });
 

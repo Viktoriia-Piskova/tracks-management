@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { fetchTracks, deleteTrack } from "../utils/http";
 import Loader from "../components/Loader";
@@ -7,17 +7,23 @@ import Error from "../components/Error";
 import TrackItem from "../components/TrackItem";
 import DeleteTrack from "../components/DeleteTrack";
 import Header from "../layouts/Header";
+import AsideFilters from "../layouts/AsideFilters";
 
 const TracksList = () => {
   const [page, setPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const [filters, setFilters] = useState({
-    searchTerm: "",
+    search: "",
     sort: "",
     order: "",
     artist: "",
     genre: "",
   });
+
+
+  // const [searchParams] = useSearchParams();
+  // const filters = Object.fromEntries([...searchParams]);
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentEventId, setCurrentEventId] = useState("fakeid");
@@ -69,13 +75,30 @@ const TracksList = () => {
     });
   }
 
-  function applySort(param) {
-    setFilters((prev) => ({ ...prev, sort: param }));
+  function applyFilters(param) {
+    console.log(param)
+
+    setFilters((prev) => ({ ...prev, ...param }));
+    console.log(filters)
   }
 
+  function resetFilters() {
+    setFilters({
+      searchTerm: "",
+      sort: "",
+      order: "",
+      artist: "",
+      genre: "",
+    });
+  
+    // Clear URL params too, optional but tasty 😋
+    setSearchParams(new URLSearchParams());
+  }
+
+
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["tracks", page],
-    queryFn: ({ signal }) => fetchTracks({ signal, page, limit }),
+    queryKey: ["tracks", page, filters],
+    queryFn: ({ signal }) => fetchTracks({ signal, page, limit, ...filters }),
     keepPreviousData: true,
   });
 
@@ -132,9 +155,9 @@ const TracksList = () => {
   }
 
   return (
-    <div className="w-[100vw]">
-      <Header />
+    <div className="w-[100vw] flex">
       <main className="px-5 max-w-[1440px] m-auto">
+        <Header />
         <div>
           <button onClick={openCreateTrackModal}>Create a Track</button>
         </div>
@@ -146,6 +169,7 @@ const TracksList = () => {
           />
         )}
       </main>
+      <AsideFilters onFilter={applyFilters} onReset={resetFilters} />
     </div>
   );
 };
