@@ -160,8 +160,8 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
   );
 
   return (
-    <form id="track-form" onSubmit={handleSubmit} data-testid="track-form">
-      <div className="flex my-3 gap-4">
+    <form id="track-form" onSubmit={handleSubmit} data-testid="track-form" className="max-w-[1000px]">
+      <div className="flex flex-wrap my-3 gap-4">
         {hasExistingAudio ? (
           <>
             <audio
@@ -197,7 +197,7 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
       {renderInput("Cover Image", "coverImage")}
 
       {selectedGenres && (
-        <div className="selected-genres bg-slate-500">
+        <div className="bg-slate-500 flex flex-wrap gap-2">
           <GenresContainer
             genres={selectedGenres}
             areSelected={true}

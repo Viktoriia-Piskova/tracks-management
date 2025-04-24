@@ -7,10 +7,10 @@ const DeleteTrack = ({ onStopDeleting, onStartDeleting }) => {
       <div data-testid="confirm-dialog">
         <h2>Are you sure?</h2>
         <div>
-          <button type="button" onClick={onStartDeleting} data-testid="confirm-delete">
+          <button className="bg-red-900" type="button" onClick={onStartDeleting} data-testid="confirm-delete">
             Delete
           </button>
-          <button type="button" onClick={onStopDeleting} data-testid="cancel-delete">
+          <button className="bg-blue-900" type="button" onClick={onStopDeleting} data-testid="cancel-delete">
             Cancel
           </button>
         </div>

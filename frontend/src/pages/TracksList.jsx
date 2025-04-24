@@ -131,11 +131,11 @@ const TracksList = () => {
   }
 
   return (
-    <div className="w-[100vw] flex">
-      <main className="px-5 max-w-[1440px] m-auto">
+    <main className="flex flex-col-reverse lg:flex-row items-start justify-center gap-5 m-auto">
+      <section className="p-5 max-w-[1440px] m-auto">
         <Header />
         <div>
-          <button data-testid="create-track-button" onClick={openCreateTrackModal}>Create a Track</button>
+          <button className="m-4 bg-amber-500" data-testid="create-track-button" onClick={openCreateTrackModal}>Create a Track</button>
         </div>
         <div>{content}</div>
         {isDeleting && (
@@ -144,9 +144,9 @@ const TracksList = () => {
             onStartDeleting={() => handleDelete(currentEventId)}
           />
         )}
-      </main>
+      </section>
       <AsideFilters />
-    </div>
+    </main>
   );
 };
 

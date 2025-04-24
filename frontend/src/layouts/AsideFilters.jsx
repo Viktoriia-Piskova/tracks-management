@@ -22,7 +22,7 @@ const AsideFilters = () => {
   );
 
   return (
-    <aside className="p-4 bg-gray-100 rounded-xl space-y-4">
+    <aside className="p-4 bg-gray-100 rounded-xl space-y-4 w-full lg:max-w-[500px] bg-gray-300">
       <input
         data-testid="search-input"
         type="text"
