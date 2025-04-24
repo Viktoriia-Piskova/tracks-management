@@ -4,7 +4,16 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchTrackGenres } from "../utils/http.js";
 import Error from "./Error.jsx";
 
-const TrackForm = ({ inputData, onSubmit, trackOldData, children }) => {
+const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
+  const [formFields, setFormFields] = useState({
+    title: inputData?.title ?? "",
+    album: inputData?.album ?? "",
+    artist: inputData?.artist ?? "",
+    coverImage: inputData?.coverImage ?? "",
+  });
+  const [touchedFields, setTouchedFields] = useState({});
+  const [errors, setErrors] = useState({});
+  const [isFormValid, setIsFormValid] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState(inputData?.genres || []);
   const [allGenres, setAllGenres] = useState([]);
 
@@ -22,12 +31,44 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, children }) => {
     }
   }, [data, selectedGenres]);
 
+  useEffect(() => {
+    const validate = async () => {
+      const newErrors = {};
+      if (!formFields.title.trim()) newErrors.title = "Title is required";
+      if (!formFields.album.trim()) newErrors.album = "Album is required";
+      if (!formFields.artist.trim()) newErrors.artist = "Artist is required";
+  
+      const isValidImg = await validateImageUrl(formFields.coverImage);
+      if (!formFields.coverImage.trim()) {
+        newErrors.coverImage = "Cover image URL is required";
+      } else if (!isValidImg) {
+        newErrors.coverImage = "Image URL is not valid or doesn't return an image";
+      }
+  
+      setErrors(newErrors);
+      setIsFormValid(Object.keys(newErrors).length === 0 && selectedGenres.length > 0);
+    };
+  
+    validate();
+  }, [formFields, selectedGenres]);
+  
+
+  function handleInputChange(e) {
+    const { name, value } = e.target;
+    setFormFields((prev) => ({ ...prev, [name]: value }));
+  }
+
   function handleSelectGenre(genre) {
     if (!selectedGenres.includes(genre)) {
       setSelectedGenres((prevState) => [...prevState, genre]);
     } else {
       setSelectedGenres((prevState) => prevState.filter((g) => g !== genre));
     }
+  }
+
+  function handleBlur(e) {
+    const { name } = e.target;
+    setTouchedFields((prev) => ({ ...prev, [name]: true }));
   }
 
   function handleSubmit(event) {
@@ -51,54 +92,51 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, children }) => {
     onSubmit({ ...trackData });
   }
 
+  function validateImageUrl(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  }
+
+  const renderInput = (label, name, dataTestId) => (
+    <p className="flex flex-col my-3">
+      <label htmlFor={name}>{label}</label>
+      <input
+        className={`bg-slate-200 w-[50%] border px-2 py-1 rounded ${
+          touchedFields[name]
+            ? errors[name]
+              ? "border-red-500"
+              : "border-green-500"
+            : "border-gray-300"
+        }`}
+        type="text"
+        id={name}
+        name={name}
+        value={formFields[name]}
+        onChange={handleInputChange}
+        onBlur={handleBlur}
+      />
+      {touchedFields[name] && (
+        <small data-testid={`error-${fieldname}`}
+          className={`text-sm ${
+            errors[name] ? "text-red-500" : "text-green-600"
+          }`}
+        >
+          {errors[name] ? errors[name] : "Looks good!"}
+        </small>
+      )}
+    </p>
+  );
+
   return (
     <form id="track-form" onSubmit={handleSubmit} data-testid="track-form">
-      <p className="flex justify-between my-3">
-        <label htmlFor="title">title</label>
-        <input
-          data-testid="input-title"
-          className="bg-slate-200 w-[50%]"
-          type="text"
-          id="title"
-          name="title"
-          defaultValue={inputData?.title ?? ""}
-        />
-      </p>
-      <p className="flex justify-between my-3">
-        <label htmlFor="album" className="text-slate-200">
-          album
-        </label>
-        <input
-          data-testid="input-album"
-          className="bg-slate-200 w-[50%]"
-          type="text"
-          id="album"
-          name="album"
-          defaultValue={inputData?.album ?? ""}
-        />
-      </p>
-      <p className="flex justify-between my-3">
-        <label htmlFor="artist">artist</label>
-        <input
-          data-testid="input-artist"
-          className="bg-slate-200 w-[50%]"
-          type="text"
-          id="artist"
-          name="artist"
-          defaultValue={inputData?.artist ?? ""}
-        />
-      </p>
-      <p className="flex justify-between my-3">
-        <label htmlFor="coverImage">coverImage</label>
-        <input
-          data-testid="input-cover-image"
-          className="bg-slate-200 w-[50%]"
-          type="text"
-          id="coverImage"
-          name="coverImage"
-          defaultValue={inputData?.coverImage ?? ""}
-        />
-      </p>
+      {renderInput("Title", "title")}
+      {renderInput("Album", "album")}
+      {renderInput("Artist", "artist")}
+      {renderInput("Cover Image", "coverImage")}
 
       {selectedGenres && (
         <div className="selected-genres bg-slate-500">
@@ -127,7 +165,7 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, children }) => {
           value={JSON.stringify(selectedGenres)}
         />
       </div>
-      {children}
+      {buttons}
     </form>
   );
 };

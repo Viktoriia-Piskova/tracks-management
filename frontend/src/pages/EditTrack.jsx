@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { fetchTrack, queryClient, updateTrack } from "../utils/http.js";
 import TrackForm from "../components/TrackForm.jsx";
@@ -14,7 +14,7 @@ const EditTrack = () => {
     queryKey: ["tracks", params.id],
   });
 
-  const { mutate } = useMutation({
+  const { mutate, isPending: isPendingUpdate, isError: isErrorUpdate } = useMutation({
     mutationFn: updateTrack,
     onMutate: async (data) => {
       const newTrackData = data;
@@ -68,25 +68,42 @@ const EditTrack = () => {
           title="Failed to load event"
           message={error.info?.message || "Please try again"}
         />
-        <div className="form-actons">
-          <Link to="../" className="button">
-            Okay
-          </Link>
-        </div>
+        <button onClick={handleClose}>Okay</button>
       </>
     );
   }
 
+  const buttons = (
+    <>
+      <button onClick={handleClose} className="button-text">
+        Cancel
+      </button>
+      <button data-testid="submit-button" type="submit" className="button">
+        Update
+      </button>
+    </>
+  );
+
   if (data) {
     content = (
-      <TrackForm inputData={data} onSubmit={handleSubmit} trackOldData={data}>
-        <Link to="../" className="button-text">
-          Cancel
-        </Link>
-        <button type="submit" className="button">
-          Update
-        </button>
-      </TrackForm>
+      <>
+        <TrackForm
+          inputData={data}
+          onSubmit={handleSubmit}
+          trackOldData={data}
+          buttons={buttons}
+        ></TrackForm>
+
+        {isPendingUpdate && "Submitting..."}
+        {isErrorUpdate && (
+          <Error
+            title="Failed to create track"
+            message={
+              error.info?.message || "Please check your inputs and try again"
+            }
+          />
+        )}
+      </>
     );
   }
 

@@ -19,16 +19,23 @@ const CreateTrack = () => {
     mutate({ track: formData });
   }
 
+  function handleClose() {
+    navigate(-1);
+  }
+
+  const buttons = (
+    <>
+      <button type="button" onClick={handleClose}>
+        Cancel
+      </button>
+      <button data-testid="submit-button" type="submit">Create</button>
+    </>
+  );
+
   return (
     <>
-      <TrackForm onSubmit={handleSubmit}>
-        {isPending && "Submitting..."}
-        {!isPending && (
-          <>
-            <button type="submit">Create</button>
-          </>
-        )}
-      </TrackForm>
+      <TrackForm onSubmit={handleSubmit} buttons={buttons}></TrackForm>
+      {isPending && "Submitting..."}
       {isError && (
         <Error
           title="Failed to create track"
