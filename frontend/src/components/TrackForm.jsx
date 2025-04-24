@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import GenresContainer from "./GenresContainer";
 import { useQuery } from "@tanstack/react-query";
-import { fetchTrackGenres } from "../utils/http.js";
+import {
+  fetchTrackGenres,
+  uploadTrackFile,
+  deleteTrackFile,
+} from "../utils/http.js";
+
 import Error from "./Error.jsx";
 
 const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
@@ -16,6 +21,11 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState(inputData?.genres || []);
   const [allGenres, setAllGenres] = useState([]);
+  const [audioFile, setAudioFile] = useState(null);
+  const [hasExistingAudio, setHasExistingAudio] = useState(
+    !!inputData?.audioFile
+  );
+
 
   const { data, isPending, isError, error } = useQuery({
     queryFn: fetchTrackGenres,
@@ -37,21 +47,28 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
       if (!formFields.title.trim()) newErrors.title = "Title is required";
       if (!formFields.album.trim()) newErrors.album = "Album is required";
       if (!formFields.artist.trim()) newErrors.artist = "Artist is required";
-  
+
       const isValidImg = await validateImageUrl(formFields.coverImage);
       if (!formFields.coverImage.trim()) {
         newErrors.coverImage = "Cover image URL is required";
       } else if (!isValidImg) {
-        newErrors.coverImage = "Image URL is not valid or doesn't return an image";
+        newErrors.coverImage =
+          "Image URL is not valid or doesn't return an image";
       }
-  
+
       setErrors(newErrors);
-      setIsFormValid(Object.keys(newErrors).length === 0 && selectedGenres.length > 0);
+      setIsFormValid(
+        Object.keys(newErrors).length === 0 && selectedGenres.length > 0
+      );
     };
-  
+
     validate();
   }, [formFields, selectedGenres]);
-  
+
+  async function handleDeleteAudio() {
+    //await deleteTrackFile(trackOldData);
+    setHasExistingAudio(false);
+  }
 
   function handleInputChange(e) {
     const { name, value } = e.target;
@@ -71,7 +88,14 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
     setTouchedFields((prev) => ({ ...prev, [name]: true }));
   }
 
-  function handleSubmit(event) {
+  function handleAudioChange(e) {
+    const file = e.target.files[0];
+    if (file) {
+      setAudioFile(file);
+    } 
+  }
+
+  async function handleSubmit(event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
@@ -88,6 +112,9 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
     trackData.createdAt = trackOldData?.createdAt || new Date().toISOString();
     trackData.updatedAt = new Date().toISOString();
     trackData.genres = JSON.parse(trackData.genres);
+    if (audioFile) {
+      trackData.file = audioFile;
+    }
 
     onSubmit({ ...trackData });
   }
@@ -101,7 +128,7 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
     });
   }
 
-  const renderInput = (label, name, dataTestId) => (
+  const renderInput = (label, name) => (
     <p className="flex flex-col my-3">
       <label htmlFor={name}>{label}</label>
       <input
@@ -120,7 +147,8 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
         onBlur={handleBlur}
       />
       {touchedFields[name] && (
-        <small data-testid={`error-${fieldname}`}
+        <small
+          data-testid={`error-${name}`}
           className={`text-sm ${
             errors[name] ? "text-red-500" : "text-green-600"
           }`}
@@ -133,6 +161,36 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
 
   return (
     <form id="track-form" onSubmit={handleSubmit} data-testid="track-form">
+      <div className="flex my-3 gap-4">
+        {hasExistingAudio ? (
+          <>
+            <audio
+              controls
+              src={`http://localhost:8000/api/files/${inputData?.audioFile}`}
+            ></audio>
+            <button
+              type="button"
+              className="mt-2 bg-red-500 text-white px-3 py-1 rounded"
+              onClick={handleDeleteAudio}
+            >
+              Delete Existing Audio
+            </button>
+          </>
+        ) : (
+          <>
+            <label htmlFor="audio">Audio File (optional)</label>
+            <input
+              data-testid={`upload-track-${trackOldData?.id}`}
+              type="file"
+              id="audio"
+              name="audio"
+              accept="audio/*"
+              onChange={handleAudioChange}
+            />
+          </>
+        )}
+      </div>
+
       {renderInput("Title", "title")}
       {renderInput("Album", "album")}
       {renderInput("Artist", "artist")}

@@ -9,7 +9,7 @@ export const fetchTracks = async ({
   sort,
   order,
   artist,
-  genre
+  genre,
 }) => {
   const baseUrl = `http://localhost:8000/api/tracks`;
   const params = new URLSearchParams();
@@ -82,13 +82,21 @@ export const createNewTrack = async (trackData) => {
   return track;
 };
 
-export const fetchTrack = async ({ signal, slug }) => {
-  const response = await fetch(`http://localhost:8000/api/tracks/${slug}`, {
-    signal,
-  });
+
+export const uploadTrackFile = async ({ trackData }) => {
+  const formData = new FormData();
+  console.log(trackData)
+  formData.append("file", trackData.file);
+  const response = await fetch(
+    `http://localhost:8000/api/tracks/${trackData.id}/upload`,
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
 
   if (!response.ok) {
-    const error = new Error("An error occurred while fetching the track");
+    const error = new Error("An error occurred while uploading the file");
     error.code = response.status;
     error.info = await response.json();
     throw error;
@@ -98,7 +106,26 @@ export const fetchTrack = async ({ signal, slug }) => {
   return track;
 };
 
-export const deleteTrack = async ( id ) => {
+export const deleteTrackFile = async ({ trackData }) => {
+  const response = await fetch(
+    `http://localhost:8000/api/tracks/${trackData.id}/file`,
+    {
+      method: "DELETE",
+    }
+  );
+
+  if (!response.ok) {
+    const error = new Error("An error occurred while uploading the file");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const track = await response.json();
+  return track;
+};
+
+export const deleteTrack = async (id) => {
   const response = await fetch(`http://localhost:8000/api/tracks/${id}`, {
     method: "DELETE",
   });
@@ -131,4 +158,20 @@ export const updateTrack = async ({ id, track }) => {
 
   const data = await response.json();
   return data;
+};
+
+export const fetchTrack = async ({ signal, slug }) => {
+  const response = await fetch(`http://localhost:8000/api/tracks/${slug}`, {
+    signal,
+  });
+
+  if (!response.ok) {
+    const error = new Error("An error occurred while fetching the track");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const track = await response.json();
+  return track;
 };

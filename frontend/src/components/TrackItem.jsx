@@ -1,7 +1,7 @@
 import React from "react";
 import { formatIsoTime } from "../utils/helpers";
 
-const TrackItem = ({ track, onEdit, onDelete, onTrackUpdate }) => {
+const TrackItem = ({ track, onEdit, onDelete, onTrackUpdate, onFileUpdate }) => {
   return (
     <article data-testid={`track-item-${track.id}`}
       id={track.id}
@@ -35,7 +35,7 @@ const TrackItem = ({ track, onEdit, onDelete, onTrackUpdate }) => {
       <div className="flex align-bottom">
         <button data-testid={`edit-track-${track.id}`} onClick={onEdit}>Edit</button>
         <button data-testid={`delete-track-${track.id}`} onClick={onDelete}>Delete</button>
-        <button data-testid={`upload-track-${track.id}`} onClick={onTrackUpdate}>Track file</button>
+        <button data-testid={`upload-track-${track.id}`} onClick={onFileUpdate}>Track file</button>
       </div>
     </article>
   );

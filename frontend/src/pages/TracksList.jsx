@@ -113,6 +113,7 @@ const TracksList = () => {
                 <TrackItem
                   track={track}
                   onEdit={() => openEditTrackModal(track.slug)}
+                  onFileUpdate={() => openEditTrackModal(track.slug)}
                   onDelete={() => handleStartDelete(track.id)}
                 />
               </li>
