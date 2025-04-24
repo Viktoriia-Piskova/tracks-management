@@ -97,8 +97,6 @@ const TracksList = () => {
     />;
   }
 
-  console.log(data?.data?.length);
-
   if (data) {
     if (data?.data?.length < 1) {
       content = (
@@ -136,7 +134,7 @@ const TracksList = () => {
       <main className="px-5 max-w-[1440px] m-auto">
         <Header />
         <div>
-          <button onClick={openCreateTrackModal}>Create a Track</button>
+          <button data-testid="create-track-button" onClick={openCreateTrackModal}>Create a Track</button>
         </div>
         <div>{content}</div>
         {isDeleting && (

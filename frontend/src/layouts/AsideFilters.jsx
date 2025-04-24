@@ -24,6 +24,7 @@ const AsideFilters = () => {
   return (
     <aside className="p-4 bg-gray-100 rounded-xl space-y-4">
       <input
+        data-testid="search-input"
         type="text"
         placeholder="Search..."
         defaultValue={filters.search || ""}
@@ -33,6 +34,7 @@ const AsideFilters = () => {
 
       {data && (
         <select
+          data-testid="filter-genre"
           defaultValue={filters.genre || ""}
           onChange={(e) => handleChange("genre", e.target.value)}
           className="p-2 border rounded w-full"
@@ -48,12 +50,14 @@ const AsideFilters = () => {
       )}
 
       <select
+        data-testid="sort-select"
         defaultValue={filters.sort || "artist"}
         onChange={(e) => handleChange("sort", e.target.value)}
         className="p-2 border rounded w-full"
       >
         <option value="artist">Sort by Artist</option>
         <option value="title">Sort by Title</option>
+        <option value="genre">Sort by Genre</option>
       </select>
 
       <select

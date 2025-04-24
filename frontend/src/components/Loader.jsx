@@ -1,5 +1,5 @@
 const Loader = () => {
-  return <div>Loading...</div>;
+  return <div data-testid="loading-indicator">Loading...</div>;
 };
 
 export default Loader;

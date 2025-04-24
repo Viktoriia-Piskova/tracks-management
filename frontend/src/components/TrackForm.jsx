@@ -52,10 +52,11 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, children }) => {
   }
 
   return (
-    <form id="track-form" onSubmit={handleSubmit}>
+    <form id="track-form" onSubmit={handleSubmit} data-testid="track-form">
       <p className="flex justify-between my-3">
         <label htmlFor="title">title</label>
         <input
+          data-testid="input-title"
           className="bg-slate-200 w-[50%]"
           type="text"
           id="title"
@@ -68,6 +69,7 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, children }) => {
           album
         </label>
         <input
+          data-testid="input-album"
           className="bg-slate-200 w-[50%]"
           type="text"
           id="album"
@@ -78,6 +80,7 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, children }) => {
       <p className="flex justify-between my-3">
         <label htmlFor="artist">artist</label>
         <input
+          data-testid="input-artist"
           className="bg-slate-200 w-[50%]"
           type="text"
           id="artist"
@@ -88,6 +91,7 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, children }) => {
       <p className="flex justify-between my-3">
         <label htmlFor="coverImage">coverImage</label>
         <input
+          data-testid="input-cover-image"
           className="bg-slate-200 w-[50%]"
           type="text"
           id="coverImage"
@@ -119,6 +123,7 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, children }) => {
         <input
           type="hidden"
           name="genres"
+          data-testid="genre-selector"
           value={JSON.stringify(selectedGenres)}
         />
       </div>
