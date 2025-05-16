@@ -14,7 +14,11 @@ const EditTrack = () => {
     queryKey: ["tracks", params.id],
   });
 
-  const { mutate, isPending: isPendingUpdate, isError: isErrorUpdate } = useMutation({
+  const {
+    mutate,
+    isPending: isPendingUpdate,
+    isError: isErrorUpdate,
+  } = useMutation({
     mutationFn: updateTrack,
     onMutate: async (data) => {
       const newTrackData = data;
@@ -74,14 +78,18 @@ const EditTrack = () => {
   }
 
   const buttons = (
-    <>
-      <button onClick={handleClose} className="button-text">
+    <div className="flex justify-center mt-10">
+      <button onClick={handleClose} className="button-text bg-blue-950 mx-2">
         Cancel
       </button>
-      <button data-testid="submit-button" type="submit" className="button">
+      <button
+        data-testid="submit-button"
+        type="submit"
+        className="button bg-green-950 mx-2"
+      >
         Update
       </button>
-    </>
+    </div>
   );
 
   if (data) {

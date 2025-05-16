@@ -4,7 +4,7 @@ const GenreTag = ({ genre, isSelected, onSelectGenre }) => {
   return (
     <button onClick={() => onSelectGenre(genre)}
       type="button"
-      className={`inline-flex p-2 rounded-md m-2 hover:bg-blue-400 ${
+      className={`button-small inline-flex p-1 rounded-md m-2 hover:bg-blue-400 ${
         isSelected ? "bg-slate-400" : "bg-slate-800"
       }`}
     >

@@ -25,10 +25,16 @@ const UpdateFile = () => {
 
   const buttons = (
     <>
-      <button type="button" onClick={handleClose}>
+      <button type="button" className="bg-blue-950" onClick={handleClose}>
         Cancel
       </button>
-      <button data-testid="submit-button" type="submit">Create</button>
+      <button
+        data-testid="submit-button"
+        className="bg-green-950"
+        type="submit"
+      >
+        Create
+      </button>
     </>
   );
 

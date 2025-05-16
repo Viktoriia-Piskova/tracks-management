@@ -26,7 +26,6 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
     !!inputData?.audioFile
   );
 
-
   const { data, isPending, isError, error } = useQuery({
     queryFn: fetchTrackGenres,
     queryKey: ["track-genres"],
@@ -92,7 +91,7 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
     const file = e.target.files[0];
     if (file) {
       setAudioFile(file);
-    } 
+    }
   }
 
   async function handleSubmit(event) {
@@ -132,7 +131,7 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
     <p className="flex flex-col my-3">
       <label htmlFor={name}>{label}</label>
       <input
-        className={`bg-slate-200 w-[50%] border px-2 py-1 rounded ${
+        className={`bg-slate-200 border px-3 py-2 rounded ${
           touchedFields[name]
             ? errors[name]
               ? "border-red-500"
@@ -160,44 +159,61 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
   );
 
   return (
-    <form id="track-form" onSubmit={handleSubmit} data-testid="track-form" className="max-w-[1000px]">
-      <div className="flex flex-wrap my-3 gap-4">
-        {hasExistingAudio ? (
-          <>
-            <audio
-              controls
-              src={`http://localhost:8000/api/files/${inputData?.audioFile}`}
-            ></audio>
-            <button
-              type="button"
-              className="mt-2 bg-red-500 text-white px-3 py-1 rounded"
-              onClick={handleDeleteAudio}
-            >
-              Delete Existing Audio
-            </button>
-          </>
+    <form
+      id="track-form"
+      onSubmit={handleSubmit}
+      data-testid="track-form"
+      className="max-w-[1000px]"
+    >
+      <div className="flex gap-4 justify-between">
+        <div>
+          <div className="flex flex-wrap my-3 gap-4">
+            {hasExistingAudio ? (
+              <>
+                <audio
+                  controls
+                  src={`http://localhost:8000/api/files/${inputData?.audioFile}`}
+                ></audio>
+                <button
+                  type="button"
+                  className="mt-2 bg-red-900 text-white px-3 py-1 rounded"
+                  onClick={handleDeleteAudio}
+                >
+                  Delete Existing Audio
+                </button>
+              </>
+            ) : (
+              <>
+                <label htmlFor="audio">Audio File (optional)</label>
+                <input
+                  data-testid={`upload-track-${trackOldData?.id}`}
+                  type="file"
+                  id="audio"
+                  name="audio"
+                  accept="audio/*"
+                  onChange={handleAudioChange}
+                />
+              </>
+            )}
+          </div>
+
+          {renderInput("Title", "title")}
+          {renderInput("Album", "album")}
+          {renderInput("Artist", "artist")}
+          {renderInput("Cover Image", "coverImage")}
+        </div>
+        {formFields.coverImage ? (
+          <div>
+            <img src={formFields.coverImage} alt="track image" />
+          </div>
         ) : (
-          <>
-            <label htmlFor="audio">Audio File (optional)</label>
-            <input
-              data-testid={`upload-track-${trackOldData?.id}`}
-              type="file"
-              id="audio"
-              name="audio"
-              accept="audio/*"
-              onChange={handleAudioChange}
-            />
-          </>
+          <div>
+            <img src="/music-track-placeholder.webp" alt="track image" />
+          </div>
         )}
       </div>
-
-      {renderInput("Title", "title")}
-      {renderInput("Album", "album")}
-      {renderInput("Artist", "artist")}
-      {renderInput("Cover Image", "coverImage")}
-
       {selectedGenres && (
-        <div className="bg-slate-500 flex flex-wrap gap-2">
+        <div className="bg-slate-500 flex flex-wrap gap-2 mt-6 rounded-md p-2">
           <GenresContainer
             genres={selectedGenres}
             areSelected={true}
@@ -205,7 +221,7 @@ const TrackForm = ({ inputData, onSubmit, trackOldData, buttons }) => {
           />
         </div>
       )}
-      <div className="max-w-[1000px]">
+      <div className="max-w-[1000px] my-2">
         {isPending && <p>Loading genres...</p>}
         {isError && (
           <Error title="Failed to load genres" message="Please try again" />

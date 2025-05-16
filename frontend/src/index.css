@@ -50,6 +50,10 @@ button {
   transition: border-color 0.25s;
 }
 
+button.button-small {
+  padding: 0.4em 0.6em;
+}
+
 button:hover {
   border-color: #646cff;
 }
